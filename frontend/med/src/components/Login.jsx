@@ -168,11 +168,11 @@ const Login = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-[#D7CCC8] rounded-xl flex items-center justify-center mr-3 shadow-lg">
-                <Building2 className="w-6 h-6 text-white" />
+              <div className="w-12 h-12 rounded-xxl flex items-center justify-center mr-3 shadow-lg">
+                <img src='Preview.png' className='rounded-2xl'></img>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">MediCare Plus</h1>
+                <h1 className="text-xl font-bold text-gray-900">VitalCare</h1>
                 <p className="text-xs text-gray-700">Advanced Healthcare Management</p>
               </div>
             </div>
@@ -243,8 +243,8 @@ const Login = () => {
             <div className="sticky top-24">
               <div className="bg-white/20 backdrop-blur-lg rounded-3xl shadow-2xl border border-[#D7CCC8]/20 p-8">
                 <div className="text-center mb-6">
-                  <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-[#D7CCC8] rounded-2xl flex items-center justify-center mb-4 shadow-lg">
-                    <Building2 className="w-8 h-8 text-white" />
+                  <div className="mx-auto w-16 h-16 rounded-2xl flex items-center justify-center mb-4 shadow-lg">
+                    <img src='Preview.png' className='rounded-2xl'></img>
                   </div>
                   <h2 className="text-2xl font-bold text-gray-900">Welcome Back</h2>
                   <p className="text-gray-700 mt-1">Access your healthcare portal</p>
