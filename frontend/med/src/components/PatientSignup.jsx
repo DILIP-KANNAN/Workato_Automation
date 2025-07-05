@@ -77,7 +77,7 @@ const PatientSignup = () => {
     } else {
       setLoading(true)
       setError('')
-
+      console.log(formData)
       try {
         const result = await registerPatient(formData)
         
@@ -127,7 +127,7 @@ const PatientSignup = () => {
             onChange={handleInputChange}
             className="w-full px-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-lg focus:ring-2 focus:ring-[#D7CCC8] focus:border-[#D7CCC8] text-gray-900 focus:shadow-[#D7CCC8]/20 focus:shadow-lg transition-all"
             required
-          />
+          /> 
         </div>
       </div>
 
@@ -396,11 +396,11 @@ const PatientSignup = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-[#D7CCC8] rounded-xl flex items-center justify-center mr-3 shadow-lg ring-2 ring-[#D7CCC8]/20">
-                <Building2 className="w-6 h-6 text-white" />
+              <div className="w-9 h-9 rounded-xl flex items-center justify-center mr-3 ">
+                <img src='Preview.png' className='rounded-2xl'></img>
               </div>
               <div>
-                <h1 className="text-xl font-bold text-gray-900">MediCare Plus</h1>
+                <h1 className="text-xl font-bold text-gray-900">VitalCare</h1>
                 <p className="text-xs text-gray-700">Patient Registration</p>
               </div>
             </div>
@@ -411,7 +411,7 @@ const PatientSignup = () => {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-8">
           <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-[#D7CCC8] rounded-full flex items-center justify-center mb-4 shadow-lg ring-4 ring-[#D7CCC8]/20">
-            <Building2 className="w-8 h-8 text-white" />
+            <img src='Preview.png' className='rounded-2xl'></img>
           </div>
           <h2 className="text-3xl font-bold text-gray-900 relative">
             Patient Registration

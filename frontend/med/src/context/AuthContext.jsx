@@ -1,104 +1,79 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react';
+import API from '../api/axios'; // your configured Axios instance
 
-const AuthContext = createContext()
+const AuthContext = createContext();
 
 export const useAuth = () => {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error('useAuth must be used within an AuthProvider');
   }
-  return context
-}
+  return context;
+};
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null)
-  const [loading, setLoading] = useState(true)
-
-  // Mock staff credentials - in real app, this would be in backend
-  const mockStaffCredentials = {
-    'DOC001': { password: 'doctor123', role: 'doctor', name: 'Dr. Sarah Johnson' },
-    'DOC002': { password: 'doctor123', role: 'doctor', name: 'Dr. Michael Chen' },
-    'NUR001': { password: 'nurse123', role: 'nurse', name: 'Nurse Emma Wilson' },
-    'NUR002': { password: 'nurse123', role: 'nurse', name: 'Nurse David Martinez' }
-  }
-
-  // Mock patient data - in real app, this would be in backend
-  const mockPatients = {
-    'PAT001': { 
-      mobile: '1234567890', 
-      name: 'John Doe',
-      email: 'john.doe@email.com',
-      dateOfBirth: '1990-05-15',
-      role: 'patient'
-    }
-  }
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is already logged in
-    const savedUser = localStorage.getItem('hospitalUser')
+    const savedUser = localStorage.getItem('hospitalUser');
     if (savedUser) {
-      setUser(JSON.parse(savedUser))
+      setUser(JSON.parse(savedUser));
     }
-    setLoading(false)
-  }, [])
+    setLoading(false);
+  }, []);
 
+  // 🚀 Staff login
   const loginStaff = async (staffId, password) => {
-    const staff = mockStaffCredentials[staffId]
-    if (staff && staff.password === password) {
-      const userData = {
-        id: staffId,
-        name: staff.name,
-        role: staff.role,
-        type: 'staff'
-      }
-      setUser(userData)
-      localStorage.setItem('hospitalUser', JSON.stringify(userData))
-      return { success: true }
+    try {
+      const { data } = await API.post('/staff/login', { staffId, password });
+      localStorage.setItem('hospitalToken', data.token);
+      localStorage.setItem('hospitalUser', JSON.stringify(data.user));
+      setUser(data.user);
+      return { success: true };
+    } catch (error) {
+      console.error(error);
+      return { success: false, error: error.response?.data?.message || 'Staff login failed' };
     }
-    return { success: false, error: 'Invalid staff ID or password' }
-  }
+  };
 
-  const loginPatient = async (patientId, mobile, otp) => {
-    // Mock OTP verification - in real app, this would verify with backend
-    if (otp !== '123456') {
-      return { success: false, error: 'Invalid OTP' }
-    }
-
-    const patient = mockPatients[patientId]
-    if (patient && patient.mobile === mobile) {
-      const userData = {
-        id: patientId,
-        name: patient.name,
-        role: 'patient',
-        type: 'patient',
-        email: patient.email
-      }
-      setUser(userData)
-      localStorage.setItem('hospitalUser', JSON.stringify(userData))
-      return { success: true }
-    }
-    return { success: false, error: 'Invalid patient ID or mobile number' }
-  }
-
+  // 🚀 Patient registration
   const registerPatient = async (patientData) => {
-    // Mock registration - in real app, this would save to backend
-    const newPatientId = 'PAT' + String(Date.now()).slice(-3)
-    const userData = {
-      id: newPatientId,
-      name: `${patientData.firstName} ${patientData.lastName}`,
-      role: 'patient',
-      type: 'patient',
-      email: patientData.email
+    try {
+      const { data } = await API.post('/patient/register', patientData);
+      return { success: true, patientId: data.patient.patientId };
+    } catch (error) {
+      console.error(error);
+      return { success: false, error: error.response?.data?.message || 'Patient registration failed' };
     }
-    setUser(userData)
-    localStorage.setItem('hospitalUser', JSON.stringify(userData))
-    return { success: true, patientId: newPatientId }
-  }
+  };
+
+  // 🚀 Patient login: request OTP and verify OTP
+  const loginPatient = async (patientId, mobile, otp = null) => {
+    try {
+      if (!otp) {
+        // Request OTP
+        const { data } = await API.post('/patient/login', { patientId, mobile });
+        return { success: true, otpSent: true, message: data.message };
+      } else {
+        // Verify OTP
+        const { data } = await API.post('/patient/verify-otp', { patientId, otp });
+        localStorage.setItem('hospitalToken', data.token);
+        localStorage.setItem('hospitalUser', JSON.stringify(data.user));
+        setUser(data.user);
+        return { success: true };
+      }
+    } catch (error) {
+      console.error(error);
+      return { success: false, error: error.response?.data?.message || 'Patient login failed' };
+    }
+  };
 
   const logout = () => {
-    setUser(null)
-    localStorage.removeItem('hospitalUser')
-  }
+    localStorage.removeItem('hospitalToken');
+    localStorage.removeItem('hospitalUser');
+    setUser(null);
+  };
 
   const value = {
     user,
@@ -107,11 +82,7 @@ export const AuthProvider = ({ children }) => {
     loginPatient,
     registerPatient,
     logout
-  }
+  };
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  )
-}
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+};

@@ -13,51 +13,51 @@ const generatePatientId = () => {
 // @desc    Register a new patient
 // @access  Public
 router.post('/register', async (req, res) => {
-    try {
-        const { name, mobile, email, dateOfBirth, gender, address, extraInfo } = req.body;
+  try {
+    const {
+      firstName,
+      lastName,
+      dateOfBirth,
+      gender,
+      mobile,
+      email,
+      address,
+      emergencyContact,
+      emergencyRelation,
+      bloodGroup,
+      allergies,
+      chronicConditions,
+      currentMedications
+    } = req.body;
 
-        if (!name || !mobile) {
-            return res.status(400).json({ message: 'Name and mobile number are required' });
-        }
+    if (!firstName || !lastName || !dateOfBirth || !gender || !mobile || !email) {
+      return res.status(400).json({ message: "Required fields are missing" });
+    }
 
-        const existingPatient = await Patient.findOne({ mobile });
-        if (existingPatient) {
-            return res.status(400).json({ message: 'Patient with this mobile number already exists' });
-        }
+    const newPatient = new Patient({
+      firstName,
+      lastName,
+      dateOfBirth,
+      gender,
+      mobile,
+      email,
+      address,
+      emergencyContact,
+      emergencyRelation,
+      bloodGroup,
+      allergies,
+      chronicConditions,
+      currentMedications
+    });
 
-        const patientId = generatePatientId();
+    await newPatient.save();
 
-        const newPatient = new Patient({
-            patientId,
-            name,
-            mobile,
-            email,
-            dateOfBirth,
-            gender,
-            address,
-            extraInfo
-        });
-
-        await newPatient.save();
-
-        res.status(201).json({
-            message: 'Patient registered successfully',
-            patientId,
-            patient: {
-                name,
-                mobile,
-                email,
-                dateOfBirth,
-                gender,
-                address
-            }
-        });
-    } catch (error) {
-        console.error('Registration error:', error);
-        res.status(500).json({ message: 'Server error' });
-    } 
+    res.status(201).json({ message: "Patient registered successfully", patient: newPatient });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 });
-
 // @route   POST /api/patient/login
 // @desc    Patient login - generate OTP
 // @access  Public

@@ -91,7 +91,7 @@ const Login = () => {
     {
       icon: Heart,
       title: "Cardiology",
-      description: "Advanced heart care with state-of-the-art equipment and experienced cardiologists",
+      description: "Advanced heart care with state-of-the-art equipment and cardiologists",
       color: "bg-red-100 text-red-600",
       bgColor: "bg-red-50"
     },
