@@ -1,0 +1,278 @@
+[
+  {
+    "department": "Cardiology",
+    "nurses_count": 12,
+    "doctors": [
+      {
+        "doctor_id": "CAR001",
+        "name": "Dr. Asha Menon",
+        "qualification": "MBBS, DM (Cardiology)",
+        "experience_years": 12,
+        "position": "Senior Consultant",
+        "work_timings": "9:00 AM - 5:00 PM"
+      },
+      {
+        "doctor_id": "CAR002",
+        "name": "Dr. Vivek Nair",
+        "qualification": "MBBS, MD (Internal), DM (Cardiology)",
+        "experience_years": 9,
+        "position": "Consultant",
+        "work_timings": "1:00 PM - 9:00 PM"
+      },
+      {
+        "doctor_id": "CAR003",
+        "name": "Dr. Nisha Gupta",
+        "qualification": "MBBS, DNB (Cardiology)",
+        "experience_years": 7,
+        "position": "Cardiologist",
+        "work_timings": "8:00 AM - 4:00 PM"
+      },
+      {
+        "doctor_id": "CAR004",
+        "name": "Dr. Rohit Sen",
+        "qualification": "MBBS, DM (Cardiology)",
+        "experience_years": 10,
+        "position": "Associate Consultant",
+        "work_timings": "11:00 AM - 7:00 PM"
+      },
+      {
+        "doctor_id": "CAR005",
+        "name": "Dr. Meera Pillai",
+        "qualification": "MBBS, MD, DM (Cardiology)",
+        "experience_years": 6,
+        "position": "Junior Cardiologist",
+        "work_timings": "2:00 PM - 10:00 PM"
+      }
+    ]
+  },
+  {
+    "department": "General Medicine",
+    "nurses_count": 15,
+    "doctors": [
+      {
+        "doctor_id": "GEN001",
+        "name": "Dr. Kavitha Rao",
+        "qualification": "MBBS, MD (General Medicine)",
+        "experience_years": 10,
+        "position": "Senior Physician",
+        "work_timings": "8:00 AM - 4:00 PM"
+      },
+      {
+        "doctor_id": "GEN002",
+        "name": "Dr. Rajat Khanna",
+        "qualification": "MBBS, MD (Internal Medicine)",
+        "experience_years": 8,
+        "position": "Consultant",
+        "work_timings": "9:00 AM - 5:00 PM"
+      },
+      {
+        "doctor_id": "GEN003",
+        "name": "Dr. Simran Kaur",
+        "qualification": "MBBS, MD",
+        "experience_years": 6,
+        "position": "Physician",
+        "work_timings": "10:00 AM - 6:00 PM"
+      },
+      {
+        "doctor_id": "GEN004",
+        "name": "Dr. Aditya Joshi",
+        "qualification": "MBBS, MD",
+        "experience_years": 11,
+        "position": "Consulting Physician",
+        "work_timings": "12:00 PM - 8:00 PM"
+      },
+      {
+        "doctor_id": "GEN005",
+        "name": "Dr. Neena Arora",
+        "qualification": "MBBS",
+        "experience_years": 5,
+        "position": "Junior Doctor",
+        "work_timings": "2:00 PM - 10:00 PM"
+      }
+    ]
+  },
+  {
+    "department": "Pediatrics",
+    "nurses_count": 10,
+    "doctors": [
+      {
+        "doctor_id": "PED001",
+        "name": "Dr. Arvind Mehta",
+        "qualification": "MBBS, MD (Pediatrics)",
+        "experience_years": 7,
+        "position": "Consultant Pediatrician",
+        "work_timings": "10:00 AM - 6:00 PM"
+      },
+      {
+        "doctor_id": "PED002",
+        "name": "Dr. Renu Patel",
+        "qualification": "MBBS, DCH",
+        "experience_years": 9,
+        "position": "Senior Pediatrician",
+        "work_timings": "8:00 AM - 4:00 PM"
+      },
+      {
+        "doctor_id": "PED003",
+        "name": "Dr. Ashwin Varma",
+        "qualification": "MBBS, MD (Pediatrics)",
+        "experience_years": 6,
+        "position": "Associate Consultant",
+        "work_timings": "11:00 AM - 7:00 PM"
+      },
+      {
+        "doctor_id": "PED004",
+        "name": "Dr. Sheela Reddy",
+        "qualification": "MBBS, DCH",
+        "experience_years": 5,
+        "position": "Junior Pediatrician",
+        "work_timings": "12:00 PM - 8:00 PM"
+      },
+      {
+        "doctor_id": "PED005",
+        "name": "Dr. Vikram Shah",
+        "qualification": "MBBS, MD",
+        "experience_years": 10,
+        "position": "Senior Consultant",
+        "work_timings": "9:00 AM - 5:00 PM"
+      }
+    ]
+  },
+  {
+    "department": "Surgery",
+    "nurses_count": 18,
+    "doctors": [
+      {
+        "doctor_id": "SUR001",
+        "name": "Dr. Neha Singh",
+        "qualification": "MBBS, MS (General Surgery)",
+        "experience_years": 11,
+        "position": "Chief Surgeon",
+        "work_timings": "7:00 AM - 3:00 PM"
+      },
+      {
+        "doctor_id": "SUR002",
+        "name": "Dr. Pranav Kapoor",
+        "qualification": "MBBS, MS",
+        "experience_years": 8,
+        "position": "Surgeon",
+        "work_timings": "10:00 AM - 6:00 PM"
+      },
+      {
+        "doctor_id": "SUR003",
+        "name": "Dr. Aarti Nair",
+        "qualification": "MBBS, DNB (Surgery)",
+        "experience_years": 6,
+        "position": "Surgical Consultant",
+        "work_timings": "1:00 PM - 9:00 PM"
+      },
+      {
+        "doctor_id": "SUR004",
+        "name": "Dr. Zahir Khan",
+        "qualification": "MBBS, MS",
+        "experience_years": 5,
+        "position": "Junior Surgeon",
+        "work_timings": "2:00 PM - 10:00 PM"
+      },
+      {
+        "doctor_id": "SUR005",
+        "name": "Dr. Malvika Shetty",
+        "qualification": "MBBS, MS (Surgery)",
+        "experience_years": 9,
+        "position": "Consultant Surgeon",
+        "work_timings": "9:00 AM - 5:00 PM"
+      }
+    ]
+  },
+  {
+    "department": "Oncology",
+    "nurses_count": 9,
+    "doctors": [
+      {
+        "doctor_id": "ONC001",
+        "name": "Dr. Sameer Bhatt",
+        "qualification": "MBBS, MD (Oncology)",
+        "experience_years": 8,
+        "position": "Oncologist",
+        "work_timings": "11:00 AM - 7:00 PM"
+      },
+      {
+        "doctor_id": "ONC002",
+        "name": "Dr. Ishita Rao",
+        "qualification": "MBBS, DM (Medical Oncology)",
+        "experience_years": 10,
+        "position": "Senior Consultant",
+        "work_timings": "9:00 AM - 5:00 PM"
+      },
+      {
+        "doctor_id": "ONC003",
+        "name": "Dr. Rajeev Mishra",
+        "qualification": "MBBS, MD",
+        "experience_years": 6,
+        "position": "Radiation Oncologist",
+        "work_timings": "10:00 AM - 6:00 PM"
+      },
+      {
+        "doctor_id": "ONC004",
+        "name": "Dr. Veena Iyer",
+        "qualification": "MBBS, DNB (Oncology)",
+        "experience_years": 7,
+        "position": "Consultant Oncologist",
+        "work_timings": "1:00 PM - 9:00 PM"
+      },
+      {
+        "doctor_id": "ONC005",
+        "name": "Dr. Farhan Ali",
+        "qualification": "MBBS, DM (Oncology)",
+        "experience_years": 5,
+        "position": "Medical Oncologist",
+        "work_timings": "12:00 PM - 8:00 PM"
+      }
+    ]
+  },
+  {
+    "department": "General Consultation",
+    "nurses_count": 5,
+    "doctors": [
+      {
+        "doctor_id": "GENC001",
+        "name": "Dr. Priya Verma",
+        "qualification": "MBBS",
+        "experience_years": 5,
+        "position": "General Practitioner",
+        "work_timings": "10:00 AM - 6:00 PM"
+      },
+      {
+        "doctor_id": "GENC002",
+        "name": "Dr. Sanjay Das",
+        "qualification": "MBBS",
+        "experience_years": 7,
+        "position": "Consulting GP",
+        "work_timings": "9:00 AM - 5:00 PM"
+      },
+      {
+        "doctor_id": "GENC003",
+        "name": "Dr. Leela Krishnan",
+        "qualification": "MBBS",
+        "experience_years": 6,
+        "position": "Family Physician",
+        "work_timings": "12:00 PM - 8:00 PM"
+      },
+      {
+        "doctor_id": "GENC004",
+        "name": "Dr. Manoj Sinha",
+        "qualification": "MBBS",
+        "experience_years": 9,
+        "position": "Senior GP",
+        "work_timings": "8:00 AM - 4:00 PM"
+      },
+      {
+        "doctor_id": "GENC005",
+        "name": "Dr. Ritu Sharma",
+        "qualification": "MBBS",
+        "experience_years": 4,
+        "position": "Junior GP",
+        "work_timings": "2:00 PM - 10:00 PM"
+      }
+    ]
+  }
+]
