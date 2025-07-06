@@ -23,10 +23,11 @@ const PatientSignup = () => {
   })
   const [otp, setOtp] = useState('')
   const [showOtp, setShowOtp] = useState(false)
+  const [otpVerified, setOtpVerified] = useState(false);
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const { registerPatient } = useAuth()
+  const { requestOtp, verifyotp, registerPatient } = useAuth()
   const navigate = useNavigate()
 
   const handleInputChange = (e) => {
@@ -40,59 +41,90 @@ const PatientSignup = () => {
 
   const sendOtp = async () => {
     if (!formData.mobile) {
-      setError('Please enter your mobile number')
-      return
+      setError('Please enter your mobile number');
+      return;
     }
-    
-    setShowOtp(true)
-    setError('OTP sent to your mobile number. Use 123456 for demo.')
+    setLoading(true);
+    const result = await requestOtp(formData.mobile);
+    setLoading(false);
+
+    if (result.success) {
+      setShowOtp(true);
+      setError(`OTP sent to your mobile number. Demo OTP: ${result.otp}`); // remove OTP in production
+    } else {
+      setError(result.error);
+    }
   }
 
-  const verifyOtp = () => {
-    if (otp !== '123456') {
-      setError('Invalid OTP')
-      return false
+  const verifyOtp = async() => {
+    if (!otp) {
+      setError('Please enter the OTP');
+      return;
     }
-    return true
+    setLoading(true);
+    const result = await verifyotp(formData.mobile, otp);
+    setLoading(false);
+
+    if (result.success) {
+      setOtpVerified(true);
+      setError('OTP verified successfully. Please complete the form to register.');
+    } else {
+      setError(result.error);
+    }
   }
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    
-    if (step === 1) {
-      if (!formData.firstName || !formData.lastName || !formData.dateOfBirth || !formData.gender) {
-        setError('Please fill all required fields')
-        return
-      }
-      setStep(2)
-    } else if (step === 2) {
-      if (!showOtp) {
-        sendOtp()
-        return
-      }
-      
-      if (!verifyOtp()) return
-      
-      setStep(3)
-    } else {
-      setLoading(true)
-      setError('')
-      console.log(formData)
-      try {
-        const result = await registerPatient(formData)
-        
-        if (result.success) {
-          navigate('/dashboard')
-        } else {
-          setError(result.error || 'Registration failed')
-        }
-      } catch (err) {
-        setError('Registration failed. Please try again.')
-      }
-      
-      setLoading(false)
+  e.preventDefault();
+
+  if (step === 1) {
+    // Basic validation
+    if (!formData.firstName || !formData.lastName || !formData.dateOfBirth || !formData.gender) {
+      setError('Please fill all required fields');
+      return;
     }
+    setStep(2);
+
+  } else if (step === 2) {
+    if (!showOtp) {
+      await sendOtp();  // Use async OTP trigger
+      return;
+    }
+
+    if (!otp) {
+      setError('Please enter the OTP');
+      return;
+    }
+
+    setLoading(true);
+    const result = await verifyotp(formData.mobile, otp);
+    setLoading(false);
+
+    if (result.success) {
+      setStep(3);
+      setError('OTP verified. Please complete final details.');
+    } else {
+      setError(result.error || 'OTP verification failed.');
+    }
+
+  } else {
+    setLoading(true);
+    setError('');
+    try {
+      const result = await registerPatient(formData);
+
+      if (result.success) {
+        navigate('/dashboard');
+      } else {
+        setError(result.error || 'Registration failed');
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Registration failed. Please try again.');
+    }
+    setLoading(false);
   }
+};
+
 
   const renderStep1 = () => (
     <div className="space-y-6">

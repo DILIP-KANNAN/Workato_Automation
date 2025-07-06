@@ -23,7 +23,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
-  // 🚀 Staff login
+  // 🚀 STAFF LOGIN
   const loginStaff = async (staffId, password) => {
     try {
       const { data } = await API.post('/staff/login', { staffId, password });
@@ -37,32 +37,49 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 🚀 Patient registration
-  const registerPatient = async (patientData) => {
+  // 🚀 PATIENT: Request OTP for login or registration
+  const requestOtp = async (mobile) => {
     try {
-      const { data } = await API.post('/patient/register', patientData);
-      return { success: true, patientId: data.patient.patientId };
+      const { data } = await API.post('/patient/generate-otp', { mobile });
+      return { success: true, message: data.message, otp: data.otp }; // remove `otp` in production
     } catch (error) {
       console.error(error);
-      return { success: false, error: error.response?.data?.message || 'Patient registration failed' };
+      return { success: false, error: error.response?.data?.message || 'OTP generation failed' };
     }
   };
 
-  // 🚀 Patient login: request OTP and verify OTP
-  const loginPatient = async (patientId, mobile, otp = null) => {
+  // 🚀 PATIENT REGISTRATION (requires OTP)
+  const registerPatient = async (patientData) => {
     try {
-      if (!otp) {
-        // Request OTP
-        const { data } = await API.post('/patient/login', { patientId, mobile });
-        return { success: true, otpSent: true, message: data.message };
-      } else {
-        // Verify OTP
-        const { data } = await API.post('/patient/verify-otp', { patientId, otp });
+        const { data } = await API.post('/patient/register', patientData);
         localStorage.setItem('hospitalToken', data.token);
         localStorage.setItem('hospitalUser', JSON.stringify(data.user));
         setUser(data.user);
         return { success: true };
-      }
+    } catch (error) {
+        console.error(error);
+        return { success: false, error: error.response?.data?.message || 'Patient registration failed' };
+    }
+  };
+
+  const verifyotp = async (mobile, otp) => {
+    try {
+      const { data } = await API.post('/patient/verify-otp', { mobile, otp });
+      return { success: true, message: data.message };
+    } catch (error) {
+      console.error(error);
+      return { success: false, error: error.response?.data?.message || 'OTP verification failed' };
+    }
+  };
+
+  // 🚀 PATIENT LOGIN (requires OTP)
+  const loginPatient = async (mobile, otp) => {
+    try {
+      const { data } = await API.post('/patient/login', { mobile, otp });
+      localStorage.setItem('hospitalToken', data.token);
+      localStorage.setItem('hospitalUser', JSON.stringify(data.user));
+      setUser(data.user);
+      return { success: true };
     } catch (error) {
       console.error(error);
       return { success: false, error: error.response?.data?.message || 'Patient login failed' };
@@ -79,10 +96,16 @@ export const AuthProvider = ({ children }) => {
     user,
     loading,
     loginStaff,
-    loginPatient,
+    requestOtp,
+    verifyotp,
     registerPatient,
+    loginPatient,
     logout
   };
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 };

@@ -34,7 +34,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  const { loginStaff, loginPatient } = useAuth()
+  const { requestOtp, loginStaff, loginPatient } = useAuth()
   const navigate = useNavigate()
 
   const handleInputChange = (e) => {
@@ -46,14 +46,25 @@ const Login = () => {
   }
 
   const sendOtp = async () => {
-    if (!formData.patientId || !formData.mobile) {
-      setError('Please enter Patient ID and Mobile Number')
-      return
+    if (!formData.mobile) {
+        setError('Please enter your mobile number');
+        return;
     }
-    
-    setShowOtp(true)
-    setError('OTP sent to your mobile number. Use 123456 for demo.')
-  }
+
+    setLoading(true);
+    setError('');
+
+    const result = await requestOtp(formData.mobile); // from AuthContext
+
+    setLoading(false);
+
+    if (result.success) {
+        setShowOtp(true);
+        setError(`OTP sent to your mobile. (Demo OTP: ${result.otp})`);
+    } else {
+        setError(result.error || 'Failed to send OTP.');
+    }
+  };
 
   const handleStaffLogin = async (e) => {
     e.preventDefault()
@@ -76,7 +87,7 @@ const Login = () => {
     setLoading(true)
     setError('')
 
-    const result = await loginPatient(formData.patientId, formData.mobile, formData.otp)
+    const result = await loginPatient( formData.mobile, formData.otp)
     
     if (result.success) {
       navigate('/dashboard')
@@ -372,7 +383,6 @@ const Login = () => {
                             onChange={handleInputChange}
                             placeholder="Enter patient ID"
                             className="w-full pl-10 pr-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-lg focus:ring-2 focus:ring-[#D7CCC8] focus:border-[#D7CCC8] text-gray-900 placeholder-gray-600"
-                            required
                           />
                         </div>
                       </div>
@@ -637,7 +647,6 @@ const Login = () => {
                         onChange={handleInputChange}
                         placeholder="Enter patient ID"
                         className="w-full pl-10 pr-4 py-3 bg-white/80 backdrop-blur-sm border border-blue-200/50 rounded-lg focus:ring-2 focus:ring-[#D7CCC8] focus:border-[#D7CCC8] text-gray-900 placeholder-gray-600"
-                        required
                       />
                     </div>
                   </div>

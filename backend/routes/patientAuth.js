@@ -3,123 +3,119 @@ const router = express.Router();
 const Patient = require('../models/Patient');
 const Otp = require('../models/otp');
 const jwt = require('jsonwebtoken');
+const { generateOtp } = require('../controllers/otpController');
 
 // Utility function to generate unique patient ID
 const generatePatientId = () => {
-    return 'PAT' + Date.now(); // Example: PAT1720509050102
+    return 'PAT' + Date.now();
 };
 
-// @route   POST /api/patient/register
-// @desc    Register a new patient
-// @access  Public
+// @route POST /api/patient/generate-otp
+// @desc Generate OTP for login/signup
+router.post('/generate-otp', generateOtp);
+
+// @route POST /api/patient/register
+// @desc Register a new patient after OTP verification
 router.post('/register', async (req, res) => {
-  try {
-    const {
-      firstName,
-      lastName,
-      dateOfBirth,
-      gender,
-      mobile,
-      email,
-      address,
-      emergencyContact,
-      emergencyRelation,
-      bloodGroup,
-      allergies,
-      chronicConditions,
-      currentMedications
-    } = req.body;
+    try {
+        const {
+            firstName,
+            lastName,
+            dateOfBirth,
+            gender,
+            mobile,
+            email,
+            address,
+            emergencyContact,
+            emergencyRelation,
+            bloodGroup,
+            allergies,
+            chronicConditions,
+            currentMedications,
+            otp
+        } = req.body;
 
-    if (!firstName || !lastName || !dateOfBirth || !gender || !mobile || !email) {
-      return res.status(400).json({ message: "Required fields are missing" });
+        if (!firstName || !lastName || !dateOfBirth || !gender || !mobile || !email) {
+            return res.status(400).json({ message: "Required fields are missing" });
+        }
+
+        const existingPatient = await Patient.findOne({ mobile });
+        if (existingPatient) {
+            return res.status(400).json({ message: "Patient with this mobile number already exists" });
+        }
+
+        const newPatient = new Patient({
+            patientId: generatePatientId(),
+            firstName,
+            lastName,
+            dateOfBirth,
+            gender,
+            mobile,
+            email,
+            address,
+            emergencyContact,
+            emergencyRelation,
+            bloodGroup,
+            allergies,
+            chronicConditions,
+            currentMedications
+        });
+
+        await newPatient.save();
+        await Otp.deleteMany({ mobile });
+
+        const token = jwt.sign(
+    { id: newPatient._id, role: 'patient', patientId: newPatient.patientId },
+    process.env.JWT_SECRET,
+    { expiresIn: '1d' }
+);
+
+res.status(201).json({
+    message: "Patient registered successfully",
+    token,
+    user: {
+        id: newPatient._id,
+        patientId: newPatient.patientId,
+        name: `${newPatient.firstName} ${newPatient.lastName}`,
+        email: newPatient.email,
+        mobile: newPatient.mobile,
+        role: 'patient'
     }
-
-    const newPatient = new Patient({
-      firstName,
-      lastName,
-      dateOfBirth,
-      gender,
-      mobile,
-      email,
-      address,
-      emergencyContact,
-      emergencyRelation,
-      bloodGroup,
-      allergies,
-      chronicConditions,
-      currentMedications
-    });
-
-    await newPatient.save();
-
-    res.status(201).json({ message: "Patient registered successfully", patient: newPatient });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Server error" });
-  }
 });
-// @route   POST /api/patient/login
-// @desc    Patient login - generate OTP
-// @access  Public
+
+    } catch (error) {
+        console.error('Registration error:', error);
+        res.status(500).json({ message: "Server error" });
+    }
+});
+
+// @route POST /api/patient/login
+// @desc Login patient after OTP verification
 router.post('/login', async (req, res) => {
     try {
-        const { patientId, mobile } = req.body;
+        const { mobile, otp } = req.body;
 
-        if (!patientId || !mobile) {
-            return res.status(400).json({ message: 'Patient ID and mobile number are required' });
+        if (!mobile || !otp) {
+            return res.status(400).json({ message: 'Mobile number and OTP are required' });
         }
 
-        const patient = await Patient.findOne({ patientId, mobile });
-        if (!patient) {
-            return res.status(400).json({ message: 'Patient not found with provided ID and mobile number' });
-        }
-
-        const generatedOtp = Math.floor(100000 + Math.random() * 900000).toString();
-
-        await Otp.create({ patientId, otp: generatedOtp });
-
-        // In production: send OTP via SMS
-        // For now, return OTP for testing
-        res.status(200).json({
-            message: 'OTP generated successfully',
-            otp: generatedOtp // remove in production
-        });
-    } catch (error) {
-        console.error('OTP generation error:', error);
-        res.status(500).json({ message: 'Server error' });
-    }
-});
-
-// @route   POST /api/patient/verify-otp
-// @desc    Verify OTP and login patient
-// @access  Public
-router.post('/verify-otp', async (req, res) => {
-    try {
-        const { patientId, otp } = req.body;
-
-        if (!patientId || !otp) {
-            return res.status(400).json({ message: 'Patient ID and OTP are required' });
-        }
-
-        const existingOtp = await Otp.findOne({ patientId, otp });
-        if (!existingOtp) {
+        const otpRecord = await Otp.findOne({ mobile, otp });
+        if (!otpRecord) {
             return res.status(400).json({ message: 'Invalid or expired OTP' });
         }
 
-        const patient = await Patient.findOne({ patientId });
+        const patient = await Patient.findOne({ mobile });
         if (!patient) {
-            return res.status(400).json({ message: 'Patient not found' });
+            return res.status(404).json({ message: 'Patient not found' });
         }
 
-        // OTP verified, generate JWT
         const token = jwt.sign(
             { id: patient._id, role: 'patient', patientId: patient.patientId },
             process.env.JWT_SECRET,
             { expiresIn: '1d' }
         );
 
-        // Clean up OTP after successful use
-        await Otp.deleteMany({ patientId });
+        await Otp.deleteMany({ mobile });
 
         res.status(200).json({
             message: 'Login successful',
@@ -127,16 +123,43 @@ router.post('/verify-otp', async (req, res) => {
             user: {
                 id: patient._id,
                 patientId: patient.patientId,
-                name: patient.name,
+                name: `${patient.firstName} ${patient.lastName}`,
                 email: patient.email,
                 mobile: patient.mobile,
                 role: 'patient'
             }
         });
     } catch (error) {
-        console.error('OTP verification error:', error);
+        console.error('Login error:', error);
         res.status(500).json({ message: 'Server error' });
     }
 });
+
+// @route   POST /api/patient/verify-otp
+// @desc    Verify OTP (for signup)
+// @access  Public
+router.post('/verify-otp', async (req, res) => {
+  try {
+    const { mobile, otp } = req.body;
+
+    if (!mobile || !otp) {
+      return res.status(400).json({ message: 'Mobile number and OTP are required' });
+    }
+
+    const existingOtp = await Otp.findOne({ mobile, otp });
+    if (!existingOtp) {
+      return res.status(400).json({ message: 'Invalid or expired OTP' });
+    }
+
+    // OTP verified successfully, clean up
+    await Otp.deleteMany({ mobile });
+
+    res.status(200).json({ message: 'OTP verified successfully' });
+  } catch (error) {
+    console.error('OTP verification error:', error);
+    res.status(500).json({ message: 'Server error during OTP verification' });
+  }
+});
+
 
 module.exports = router;
