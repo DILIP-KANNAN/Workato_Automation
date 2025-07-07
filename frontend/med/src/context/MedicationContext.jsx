@@ -8,6 +8,10 @@ import {
   AlertCircle, 
   AlertTriangle 
 } from 'lucide-react'
+import React, { useEffect  } from 'react';
+import API from '../api/axios';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
 
 const MedicationContext = createContext()
 
@@ -20,111 +24,93 @@ export const useMedication = () => {
 }
 
 export const MedicationProvider = ({ children }) => {
+  const [currentMedications, setCurrentMedications] = useState([]);
+  const [medicationsLoading, setMedicationsLoading] = useState(false);
+  const [medicationsError, setMedicationsError] = useState('');
   const [expandedMedications, setExpandedMedications] = useState({})
-  const [medicationQuantities, setMedicationQuantities] = useState({
-    'lisinopril-current': 15,
-    'metoprolol-current': 8,
-    'aspirin-current': 30,
-    'atorvastatin-current': 0
-  })
-  const [reminderTimes, setReminderTimes] = useState({
-    'lisinopril-current': { morning: '08:00', evening: '20:00' },
-    'metoprolol-current': { morning: '08:00', lunch: '13:00' },
-    'aspirin-current': { evening: '20:00' },
-    'atorvastatin-current': { evening: '20:00' }
-  })
+  const [medicationQuantities, setMedicationQuantities] = useState({})
+  const [reminderTimes, setReminderTimes] = useState({})
+  const [previousMedications, setPreviousMedications] = useState([]);
 
-  // Current medications
-  const currentMedications = [
-    {
-      id: 'lisinopril-current',
-      name: 'Lisinopril',
-      dosage: '10mg',
-      frequency: 'Twice daily',
-      timing: ['morning', 'evening'],
-      foodInstruction: 'Take with or without food',
-      duration: '3 months',
-      sideEffects: 'Dizziness, dry cough, headache',
-      prescribedBy: 'Dr. Sarah Johnson',
-      treatment: 'Hypertension Management',
-      startDate: '2024-12-01',
-      totalQuantity: 90
-    },
-    {
-      id: 'metoprolol-current',
-      name: 'Metoprolol',
-      dosage: '25mg',
-      frequency: 'Twice daily',
-      timing: ['morning', 'lunch'],
-      foodInstruction: 'Take with meals',
-      duration: '6 months',
-      sideEffects: 'Fatigue, dizziness, slow heart rate',
-      prescribedBy: 'Dr. Sarah Johnson',
-      treatment: 'Cardiac Arrhythmia',
-      startDate: '2024-11-15',
-      totalQuantity: 180
-    },
-    {
-      id: 'aspirin-current',
-      name: 'Aspirin',
-      dosage: '75mg',
-      frequency: 'Once daily',
-      timing: ['evening'],
-      foodInstruction: 'Take after dinner',
-      duration: 'Long-term',
-      sideEffects: 'Stomach irritation, bleeding risk',
-      prescribedBy: 'Dr. Sarah Johnson',
-      treatment: 'Cardiovascular Protection',
-      startDate: '2024-10-01',
-      totalQuantity: 30
-    },
-    {
-      id: 'atorvastatin-current',
-      name: 'Atorvastatin',
-      dosage: '20mg',
-      frequency: 'Once daily',
-      timing: ['evening'],
-      foodInstruction: 'Take with or without food',
-      duration: '6 months',
-      sideEffects: 'Muscle pain, liver enzyme elevation',
-      prescribedBy: 'Dr. Michael Chen',
-      treatment: 'Cholesterol Management',
-      startDate: '2024-12-10',
-      totalQuantity: 30
+  const { user } = useAuth();
+
+useEffect(() => {
+    const fetchMedications = async () => {
+        if (!user?.patientId) return;
+
+        setMedicationsLoading(true);
+        setMedicationsError('');
+
+        try {
+            const { data } = await API.get(`/medications/${user.patientId}`);
+            setCurrentMedications(data.medications);
+        } catch (error) {
+            console.error('Error fetching medications:', error);
+            setMedicationsError('Failed to fetch medications');
+        } finally {
+            setMedicationsLoading(false);
+        }
+    };
+    fetchMedications();
+  }, [user]);
+
+  useEffect(() => {
+    if (currentMedications.length) {
+        const quantities = {};
+        currentMedications.forEach(med => {
+            quantities[med.id] = med.Quantity || 0; // fallback safety
+        });
+        setMedicationQuantities(quantities);
     }
-  ]
+  }, [currentMedications]);
+
+  useEffect(() => {
+    if (currentMedications.length) {
+        const defaultTimes = {
+            morning: '08:00',
+            lunch: '13:00',
+            evening: '20:00'
+        };
+
+        const reminders = {};
+
+        currentMedications.forEach(med => {
+            const medReminder = {};
+
+            med.timing.forEach(time => {
+                if (med.reminderTimes && med.reminderTimes[time]) {
+                    // Use existing timing from backend if available
+                    medReminder[time] = med.reminderTimes[time];
+                } else {
+                    // Otherwise use default
+                    medReminder[time] = defaultTimes[time] || '08:00';
+                }
+            });
+
+            reminders[med.id] = medReminder;
+        });
+
+        setReminderTimes(reminders);
+    }
+  }, [currentMedications]);
+
 
   // Previous medications
-  const previousMedications = [
-    {
-      id: 'amoxicillin-prev',
-      name: 'Amoxicillin',
-      dosage: '500mg',
-      frequency: 'Three times daily',
-      timing: ['morning', 'lunch', 'evening'],
-      foodInstruction: 'Take with meals',
-      duration: '7 days',
-      prescribedBy: 'Dr. Michael Chen',
-      treatment: 'Respiratory Infection',
-      startDate: '2024-09-15',
-      endDate: '2024-09-22',
-      status: 'Completed'
-    },
-    {
-      id: 'ibuprofen-prev',
-      name: 'Ibuprofen',
-      dosage: '400mg',
-      frequency: 'As needed',
-      timing: ['morning', 'evening'],
-      foodInstruction: 'Take with food',
-      duration: '2 weeks',
-      prescribedBy: 'Dr. Lisa Park',
-      treatment: 'Post-surgical Pain',
-      startDate: '2024-08-01',
-      endDate: '2024-08-15',
-      status: 'Completed'
+  useEffect(() => {
+  const fetchPreviousMedications = async () => {
+    try {
+      const { data } = await API.get(`/previous-medications/${user.patientId}`);
+      setPreviousMedications(data.medications);
+    } catch (error) {
+      console.error('Error fetching previous medications:', error);
     }
-  ]
+  };
+
+  if (user && user.patientId) {
+    fetchPreviousMedications();
+  }
+}, [user]);
+
 
   const toggleMedicationExpansion = (medicationId) => {
     setExpandedMedications(prev => ({
@@ -133,22 +119,49 @@ export const MedicationProvider = ({ children }) => {
     }))
   }
 
-  const updateQuantity = (medicationId, change) => {
-    setMedicationQuantities(prev => ({
-      ...prev,
-      [medicationId]: Math.max(0, prev[medicationId] + change)
-    }))
-  }
+  const updateQuantity = async (medicationId, change) => {
+    const newQuantity = Math.max(0, medicationQuantities[medicationId] + change);
 
-  const updateReminderTime = (medicationId, timing, time) => {
-    setReminderTimes(prev => ({
-      ...prev,
-      [medicationId]: {
-        ...prev[medicationId],
-        [timing]: time
-      }
-    }))
-  }
+    try {
+      await API.patch('/medications/update-quantity', {
+        patientId: user.patientId,
+        medicationId,
+        Quantity: newQuantity
+      });
+
+      setMedicationQuantities(prev => ({
+        ...prev,
+        [medicationId]: newQuantity
+      }));
+      toast.success('Quantity updated successfully.');
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to update quantity.');
+    }
+  };
+
+  const updateReminderTime = async (medicationId, timing, time) => {
+    try {
+      await API.patch('/medications/update-reminder', {
+        patientId: user.patientId,
+        medicationId,
+        timing,
+        time
+      });
+
+      setReminderTimes(prev => ({
+        ...prev,
+        [medicationId]: {
+          ...prev[medicationId],
+          [timing]: time
+        }
+      }));
+      toast.success('Reminder updated successfully.');
+    } catch (error) {
+      console.error(error);
+      toast.error('Failed to update reminder.');
+    }
+  };
 
   const getStockStatus = (quantity) => {
     if (quantity === 0) return { status: 'out', color: 'bg-red-100 text-red-800', icon: AlertTriangle }

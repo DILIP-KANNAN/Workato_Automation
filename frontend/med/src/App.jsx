@@ -4,11 +4,13 @@ import Login from './components/Login'
 import PatientSignup from './components/PatientSignup'
 import Dashboard from './components/Dashboard'
 import ProtectedRoute from './components/ProtectedRoute'
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <AuthProvider>
       <div className="min-h-screen bg-gray-50">
+        <Toaster position="bottom-right" reverseOrder={false} />
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<PatientSignup />} />

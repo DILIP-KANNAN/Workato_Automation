@@ -58,17 +58,13 @@ const CurrentAppointments = () => {
             <div className="space-y-4">
               <div className="bg-white/80 backdrop-blur-sm rounded-xl border border-[#D7CCC8]/20 p-6">
                 <div className="flex items-center space-x-4 mb-6">
-                  <div className={`w-16 h-16 ${
-                    currentAppointments[currentAppointmentIndex].service === 'Cardiology' ? 'bg-red-100' : 
-                    currentAppointments[currentAppointmentIndex].service === 'General Medicine' ? 'bg-blue-100' : 
+                  <div className={`w-16 h-16 ${ 
                     'bg-purple-100'
                   } rounded-xl flex items-center justify-center`}>
                     {(() => {
-                      const IconComponent = currentAppointments[currentAppointmentIndex].icon
+                      const IconComponent = Stethoscope
                       return (
-                        <IconComponent className={`w-8 h-8 ${
-                          currentAppointments[currentAppointmentIndex].service === 'Cardiology' ? 'text-red-600' : 
-                          currentAppointments[currentAppointmentIndex].service === 'General Medicine' ? 'text-blue-600' : 
+                        <IconComponent className={`w-8 h-8 ${ 
                           'text-purple-600'
                         }`} />
                       )
@@ -164,7 +160,7 @@ const CurrentAppointments = () => {
                       <span className="text-sm font-medium">View Reports</span>
                     </button>
                     <button 
-                      onClick={() => cancelAppointment(currentAppointments[currentAppointmentIndex].id)}
+                      onClick={() => cancelAppointment(currentAppointments[currentAppointmentIndex].appointmentId)}
                       className="flex-1 flex items-center justify-center space-x-2 p-3 bg-red-100/80 hover:bg-red-200/80 rounded-lg transition-colors border border-red-200/50 text-red-700"
                     >
                       <span className="text-sm font-medium">Cancel</span>

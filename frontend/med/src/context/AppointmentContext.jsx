@@ -7,6 +7,11 @@ import {
   Building2, 
   Star 
 } from 'lucide-react'
+import React, { useEffect  } from 'react';
+import API from '../api/axios';
+import { useAuth } from '../context/AuthContext';
+import toast from 'react-hot-toast';
+import CurrentAppointments from '../components/CurrentAppointments';
 
 const AppointmentContext = createContext()
 
@@ -27,43 +32,53 @@ export const AppointmentProvider = ({ children }) => {
   const [selectedService, setSelectedService] = useState(null)
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTime, setSelectedTime] = useState('')
+  const [ongoingTreatment, setOngoingTreatment] = useState(null);
+    const { user } = useAuth();
+    const [currentAppointments, setCurrentAppointments] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
 
-  // Current appointments data
-  const currentAppointments = [
-    {
-      id: 1,
-      service: 'Cardiology',
-      icon: Heart,
-      doctor: 'Dr. Sarah Johnson',
-      date: '2025-01-15',
-      time: '10:00 AM',
-      status: 'confirmed',
-      location: 'Cardiology Wing, 3rd Floor',
-      type: 'Follow-up Consultation'
-    },
-    {
-      id: 2,
-      service: 'General Medicine',
-      icon: Stethoscope,
-      doctor: 'Dr. Michael Chen',
-      date: '2025-01-18',
-      time: '2:30 PM',
-      status: 'confirmed',
-      location: 'General Medicine, 2nd Floor',
-      type: 'Routine Checkup'
-    },
-    {
-      id: 3,
-      service: 'Radiology',
-      icon: Activity,
-      doctor: 'Dr. Lisa Park',
-      date: '2025-01-20',
-      time: '9:15 AM',
-      status: 'pending',
-      location: 'Radiology Department, Ground Floor',
-      type: 'CT Scan'
-    }
-  ]
+    useEffect(() => {
+        const fetchAppointments = async () => {
+            try {
+                const { data } = await API.get(`/appointments/${user.patientId}`);
+                setCurrentAppointments(data.appointments);
+            } catch (error) {
+                console.error('Error fetching appointments:', error);
+                setError('Failed to fetch appointments');
+            } finally {
+                setLoading(false);
+            }
+        };
+        const fetchNextAppointment = async () => {
+        try {
+            const { data } = await API.get(`/appointments/${user.patientId}`);
+            const appointment = data.appointments[0];
+
+            setOngoingTreatment({
+                service: appointment.service,
+                doctor: appointment.doctor,
+                nextAppointment: appointment.date,
+                time: appointment.time,
+                status: appointment.status || 'ongoing',
+                progress: 75, // compute or set default
+                medications: appointment.medications || [],
+                lastReport: appointment.lastReport || '',
+            });
+        } catch (error) {
+            console.error('Error fetching next appointment:', error);
+            setError('Failed to load next appointment.');
+        } finally {
+            setLoading(false);
+        }
+      };
+
+        if (user && user.patientId) {
+            fetchAppointments();
+            fetchNextAppointment();
+        }
+
+    }, [user]);
 
   const medicalServices = [
     { id: 1, name: 'Cardiology', icon: Heart, color: 'text-red-600', bgColor: 'bg-red-100' },
@@ -89,18 +104,6 @@ export const AppointmentProvider = ({ children }) => {
     { id: 1, name: 'Cardiology', icon: Heart, lastVisit: '2024-12-15' },
     { id: 2, name: 'General Medicine', icon: Stethoscope, lastVisit: '2024-11-20' }
   ]
-
-  const ongoingTreatment = {
-    service: 'Cardiology',
-    icon: Heart,
-    doctor: 'Dr. Sarah Johnson',
-    nextAppointment: '2025-01-15',
-    time: '10:00 AM',
-    status: 'ongoing',
-    progress: 75,
-    medications: ['Lisinopril 10mg', 'Metoprolol 25mg'],
-    lastReport: '2025-01-08'
-  }
 
   const nextAppointment = () => {
     setCurrentAppointmentIndex((prev) => 
@@ -141,11 +144,25 @@ export const AppointmentProvider = ({ children }) => {
     setSelectedTime('')
   }
 
-  const cancelAppointment = (appointmentId) => {
-    if (confirm('Are you sure you want to cancel this appointment?')) {
-      alert('Appointment cancelled successfully')
+  const cancelAppointment = async (appointmentId) => {
+    if (!user?.patientId) {
+        alert('User not logged in');
+        return;
     }
-  }
+
+        try {
+            const { data } = await API.delete(`/appointments/${user.patientId}/${appointmentId}`);
+            toast.success(data.message,{duration:3500});
+
+            // Update local state to reflect the cancelled appointment
+            setCurrentAppointments(prev =>
+                prev.filter(appt => appt.appointmentId !== appointmentId)
+            );
+        } catch (error) {
+            console.error(error);
+            toast.error(error.response?.data?.message || 'Failed to cancel appointment',{duration:3500});
+        }
+    }
 
   const getMinDate = () => {
     const tomorrow = new Date()

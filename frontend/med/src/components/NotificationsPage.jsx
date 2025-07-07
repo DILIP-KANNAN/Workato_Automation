@@ -110,10 +110,10 @@ const NotificationsPage = () => {
       <div className="space-y-4">
         {filteredNotifications.length > 0 ? (
           filteredNotifications.map((notification) => {
-            const IconComponent = notification.icon
+            const IconComponent =  Bell
             return (
               <div
-                key={notification.id}
+                key={notification._id}
                 className={`bg-white/60 backdrop-blur-sm rounded-xl shadow-lg border-l-4 ${getPriorityColor(notification.priority)} p-6 hover:shadow-xl transition-all ${
                   !notification.read ? 'border-r-4 border-r-blue-500' : ''
                 }`}
@@ -134,10 +134,10 @@ const NotificationsPage = () => {
                       <div className="flex items-center space-x-2 ml-4">
                         <span className="text-sm text-gray-500 flex items-center">
                           <Clock className="w-4 h-4 mr-1" />
-                          {notification.time}
+                          {new Date(notification.time).toLocaleDateString()}
                         </span>
                         <button
-                          onClick={() => deleteNotification(notification.id)}
+                          onClick={() => deleteNotification(notification._id)}
                           className="p-1 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
                         >
                           <X className="w-4 h-4" />
@@ -172,7 +172,7 @@ const NotificationsPage = () => {
                       
                       {!notification.read && (
                         <button
-                          onClick={() => markAsRead(notification.id)}
+                          onClick={() => markAsRead(notification._id)}
                           className="text-sm text-blue-600 hover:text-blue-800 font-medium"
                         >
                           Mark as read

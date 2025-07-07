@@ -28,100 +28,114 @@ export const MedicalSchemesProvider = ({ children }) => {
   const [newMessage, setNewMessage] = useState('')
 
   const governmentalSchemes = [
-    {
-      id: 1,
-      name: 'Medicare Plus',
-      description: 'Federal health insurance program for people 65 and older',
-      coverage: 'Hospital stays, medical services, prescription drugs',
-      eligibility: 'Age 65+ or certain disabilities',
-      benefits: ['Inpatient hospital care', 'Outpatient services', 'Prescription drug coverage', 'Preventive services'],
-      contact: '1-800-MEDICARE',
-      status: 'Active',
-      icon: Shield,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
-    },
-    {
-      id: 2,
-      name: 'Medicaid',
-      description: 'State and federal program for low-income individuals and families',
-      coverage: 'Comprehensive medical coverage including long-term care',
-      eligibility: 'Income-based qualification',
-      benefits: ['Hospital and physician services', 'Long-term care', 'Mental health services', 'Prescription drugs'],
-      contact: '1-800-MEDICAID',
-      status: 'Eligible',
-      icon: Shield,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
-    },
-    {
-      id: 3,
-      name: 'Veterans Affairs (VA)',
-      description: 'Healthcare benefits for military veterans',
-      coverage: 'Comprehensive healthcare through VA medical centers',
-      eligibility: 'Military service veterans',
-      benefits: ['Primary care', 'Specialty care', 'Mental health', 'Rehabilitation services'],
-      contact: '1-800-VA-HEALTH',
-      status: 'Not Applicable',
-      icon: Shield,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
-    }
-  ]
+  {
+    id: 1,
+    name: 'Ayushman Bharat - Pradhan Mantri Jan Arogya Yojana',
+    description: 'Free hospitalization coverage for low-income families under SECC 2011.',
+    coverage: 'Free hospitalization up to ₹5 lakh/year/family',
+    eligibility: 'Low-income families (as per SECC 2011)',
+    benefits: [
+      'Cashless hospitalization',
+      'Pre and post-hospitalization expenses',
+      'Treatment for critical illnesses',
+      'No cap on family size and age'
+    ],
+    contact: 'Check eligibility at pmjay.gov.in using Aadhaar',
+    status: 'Active',
+    icon: Shield,
+    color: 'text-green-600',
+    bgColor: 'bg-green-50',
+    applicationProcess: 'Auto-enrolled; check eligibility at pmjay.gov.in using Aadhaar',
+    sources: 'https://nha.gov.in/PM-JAY',
+    premium: '₹0 (fully government funded)'
+  },
+  {
+    id: 2,
+    name: 'PM National Dialysis Program',
+    description: 'Free dialysis services for patients with end-stage renal disease (ESRD), especially poor and BPL.',
+    coverage: 'Regular dialysis sessions as per medical need',
+    eligibility: 'Patients with ESRD, especially poor and BPL',
+    benefits: [
+      'Free dialysis in public hospitals',
+      'Access to empaneled centers',
+      'Reduced financial burden on families'
+    ],
+    contact: 'Visit nearest empaneled govt hospital for registration',
+    status: 'Active',
+    icon: Shield,
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50',
+    applicationProcess: 'Visit nearest empaneled govt hospital for registration',
+    sources: 'https://nhsrcindia.org',
+    premium: '₹0 (government funded)'
+  },
+  {
+    id: 3,
+    name: 'Central Government Health Scheme (CGHS)',
+    description: 'Healthcare scheme for central government employees and pensioners.',
+    coverage: 'Comprehensive healthcare for employees and eligible family members',
+    eligibility: 'Family members included under dependent definition',
+    benefits: [
+      'Outpatient care through CGHS wellness centers',
+      'Hospitalization at CGHS empaneled hospitals',
+      'Specialist consultations',
+      'Diagnostic services'
+    ],
+    contact: 'Apply via CGHS online portal or CGHS wellness centers',
+    status: 'Active',
+    icon: Shield,
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-50',
+    applicationProcess: 'Apply via CGHS online portal or CGHS wellness centers',
+    sources: 'https://cghs.gov.in',
+    premium: 'Varies (monthly deduction or pensioner contribution)'
+  }
+];
 
   const insuranceSchemes = [
-    {
-      id: 1,
-      name: 'BlueCross BlueShield Premium',
-      provider: 'BlueCross BlueShield',
-      type: 'PPO',
-      premium: '$450/month',
-      deductible: '$2,500',
-      coverage: '80% after deductible',
-      network: 'Nationwide network',
-      benefits: ['Emergency care', 'Specialist visits', 'Prescription drugs', 'Mental health'],
-      claimStatus: 'Active',
-      lastClaim: '2024-12-10',
-      claimAmount: '$1,250',
-      icon: CreditCard,
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50'
-    },
-    {
-      id: 2,
-      name: 'Aetna Health Plus',
-      provider: 'Aetna',
-      type: 'HMO',
-      premium: '$320/month',
-      deductible: '$1,500',
-      coverage: '90% after deductible',
-      network: 'Regional network',
-      benefits: ['Primary care', 'Preventive care', 'Emergency services', 'Prescription coverage'],
-      claimStatus: 'Pending',
-      lastClaim: '2024-12-15',
-      claimAmount: '$850',
-      icon: CreditCard,
-      color: 'text-green-600',
-      bgColor: 'bg-green-50'
-    },
-    {
-      id: 3,
-      name: 'UnitedHealth Choice',
-      provider: 'UnitedHealthcare',
-      type: 'EPO',
-      premium: '$380/month',
-      deductible: '$2,000',
-      coverage: '85% after deductible',
-      network: 'Exclusive provider network',
-      benefits: ['Hospital care', 'Outpatient services', 'Prescription drugs', 'Wellness programs'],
-      claimStatus: 'Approved',
-      lastClaim: '2024-11-28',
-      claimAmount: '$2,100',
-      icon: CreditCard,
-      color: 'text-purple-600',
-      bgColor: 'bg-purple-50'
-    }
-  ]
+  {
+    id: 1,
+    name: 'Star Health Medi-Classic',
+    provider: 'Star Health and Allied Insurance',
+    type: 'Individual/Family Floater',
+    premium: '₹8,500/year',
+    deductible: '₹0',
+    coverage: 'Up to ₹5 lakh',
+    network: 'Pan India hospital network',
+    benefits: ['Hospitalisation expenses', 'Pre and post-hospitalisation', 'Daycare procedures', 'Ambulance cover'],
+    icon: CreditCard,
+    color: 'text-blue-600',
+    bgColor: 'bg-blue-50'
+  },
+  {
+    id: 2,
+    name: 'New India Mediclaim Policy',
+    provider: 'The New India Assurance Co. Ltd.',
+    type: 'Family Floater',
+    premium: '₹12,000/year',
+    deductible: '₹0',
+    coverage: 'Up to ₹10 lakh',
+    network: 'Nationwide cashless network hospitals',
+    benefits: ['In-patient care', 'Daycare treatment', 'Pre and post-hospitalisation', 'AYUSH treatment'],
+    icon: CreditCard,
+    color: 'text-green-600',
+    bgColor: 'bg-green-50'
+  },
+  {
+    id: 3,
+    name: 'Employer Medical Allowance',
+    provider: 'ABC Tech Pvt. Ltd.',
+    type: 'Corporate Health Benefit',
+    premium: 'Employer funded',
+    deductible: '₹0',
+    coverage: 'Up to ₹50K/year',
+    network: 'Reimbursable at any hospital',
+    benefits: ['Doctor consultations', 'Diagnostic tests', 'Medicines', 'Emergency hospitalisation'],
+    icon: CreditCard,
+    color: 'text-purple-600',
+    bgColor: 'bg-purple-50'
+  }
+];
 
   const hospitalSchemes = [
     {

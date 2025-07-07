@@ -17,6 +17,7 @@ import {
   Maximize2
 } from 'lucide-react'
 import { useMedicalSchemes } from '../context/MedicalSchemesContext'
+import toast from 'react-hot-toast';
 
 const MedicalSchemesPage = () => {
   const {
@@ -32,6 +33,21 @@ const MedicalSchemesPage = () => {
     getStatusColor
   } = useMedicalSchemes()
 
+  const handleClick = () => {
+    toast.error('No Data Found',{duration:3500});
+  };
+  const handleClick1 = () => {
+    toast('Try to apply using the chatbot, or reach to the hospital admin for better information',
+  { 
+    icon: '⚠️',
+    style: {
+      borderRadius: '8px',
+      background: '#333',
+      color: '#fff'
+    },duration:3500 
+  }
+);
+  };
   return (
     <div className="space-y-8 relative">
       {/* Floating Chatbot */}
@@ -145,9 +161,6 @@ const MedicalSchemesPage = () => {
                   </div>
                   <div className="flex-1">
                     <h4 className="font-semibold text-gray-900">{scheme.name}</h4>
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(scheme.status)}`}>
-                      {scheme.status}
-                    </span>
                   </div>
                 </div>
 
@@ -179,16 +192,20 @@ const MedicalSchemesPage = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Phone className="w-4 h-4 text-gray-500" />
-                    <span className="text-xs text-gray-600">{scheme.contact}</span>
-                  </div>
-                  <button className="text-sm text-blue-600 hover:text-blue-800 font-medium flex items-center space-x-1">
-                    <span>Learn More</span>
-                    <ChevronRight className="w-3 h-3" />
-                  </button>
-                </div>
+<div className="space-y-2 mt-2">
+  <a
+    href={scheme.sources}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="text-sm text-blue-600 hover:text-blue-800 font-medium inline-flex items-center space-x-1"
+  >
+    <span>Learn More</span>
+    <ChevronRight className="w-3 h-3" />
+  </a>
+  <div className="flex items-center space-x-2">
+    <span className="text-xs text-gray-600">{scheme.contact}</span>
+  </div>
+</div>
               </div>
             )
           })}
@@ -236,7 +253,7 @@ const MedicalSchemesPage = () => {
                   </div>
                 </div>
 
-                <div className="mb-4">
+                {/* <div className="mb-4">
                   <p className="text-xs font-medium text-gray-700 mb-2">Recent Claim:</p>
                   <div className="bg-blue-50/80 p-3 rounded-lg">
                     <div className="flex items-center justify-between mb-1">
@@ -247,14 +264,14 @@ const MedicalSchemesPage = () => {
                     </div>
                     <p className="text-sm text-gray-600">Amount: {insurance.claimAmount}</p>
                   </div>
-                </div>
+                </div> */}
 
                 <div className="flex space-x-2">
-                  <button className="flex-1 flex items-center justify-center space-x-2 p-2 bg-blue-100/80 hover:bg-blue-200/80 rounded-lg transition-colors border border-blue-200/50">
+                  <button onClick={handleClick} className="flex-1 flex items-center justify-center space-x-2 p-2 bg-blue-100/80 hover:bg-blue-200/80 rounded-lg transition-colors border border-blue-200/50">
                     <FileText className="w-4 h-4 text-blue-600" />
                     <span className="text-sm text-blue-700">View Claims</span>
                   </button>
-                  <button className="flex-1 flex items-center justify-center space-x-2 p-2 bg-green-100/80 hover:bg-green-200/80 rounded-lg transition-colors border border-green-200/50">
+                  <button onClick={handleClick1} className="flex-1 flex items-center justify-center space-x-2 p-2 bg-green-100/80 hover:bg-green-200/80 rounded-lg transition-colors border border-green-200/50">
                     <Mail className="w-4 h-4 text-green-600" />
                     <span className="text-sm text-green-700">Contact</span>
                   </button>
