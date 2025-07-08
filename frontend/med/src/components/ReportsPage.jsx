@@ -17,7 +17,7 @@ import ServiceReportPage from './ServiceReportPage'
 
 const ReportsPage = () => {
   const { user } = useAuth()
-  const { medicalReports, downloadGeneralReport } = useReports()
+  const { medicalReports, downloadGeneralReportPDF } = useReports()
   const [selectedReport, setSelectedReport] = useState(null)
 
   if (selectedReport) {
@@ -35,7 +35,7 @@ const ReportsPage = () => {
           </h3>
           <div className="flex items-center space-x-3">
             <button
-              onClick={() => downloadGeneralReport(user)}
+              onClick={() => downloadGeneralReportPDF(user)}
               className="flex items-center space-x-2 px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition-colors shadow-lg"
             >
               <Download className="w-4 h-4" />
