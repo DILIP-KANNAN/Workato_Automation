@@ -121,7 +121,7 @@ export const ReportsProvider = ({ children }) => {
 }) => {
     const doc = new jsPDF();
     let y = 15;
-    console.log("I am called!!")
+    //console.log("I am called!!")
     doc.setFontSize(16);
     doc.text("MEDICARE PLUS - MEDICAL REPORT", 14, y);
     y += 10;

@@ -16,6 +16,17 @@ router.post('/generate-otp', generateOtp);
 
 // @route POST /api/patient/register
 // @desc Register a new patient after OTP verification
+function calculateAge(dateOfBirth) {
+    const dob = new Date(dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+    return age;
+}
+
 router.post('/register', async (req, res) => {
     try {
         const {
@@ -32,7 +43,6 @@ router.post('/register', async (req, res) => {
             allergies,
             chronicConditions,
             currentMedications,
-            otp
         } = req.body;
 
         if (!firstName || !lastName || !dateOfBirth || !gender || !mobile || !email) {
@@ -44,11 +54,14 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ message: "Patient with this mobile number already exists" });
         }
 
+        const age = calculateAge(dateOfBirth);
+
         const newPatient = new Patient({
             patientId: generatePatientId(),
             firstName,
             lastName,
             dateOfBirth,
+            age,
             gender,
             mobile,
             email,
@@ -58,36 +71,37 @@ router.post('/register', async (req, res) => {
             bloodGroup,
             allergies,
             chronicConditions,
-            currentMedications
+            currentMedications,
+            vitals: { bp: null, hr: null, temp: null, weight: null, height: null }
         });
 
         await newPatient.save();
         await Otp.deleteMany({ mobile });
 
         const token = jwt.sign(
-    { id: newPatient._id, role: 'patient', patientId: newPatient.patientId },
-    process.env.JWT_SECRET,
-    { expiresIn: '1d' }
-);
+            { id: newPatient._id, role: 'patient', patientId: newPatient.patientId },
+            process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        );
 
-res.status(201).json({
-    message: "Patient registered successfully",
-    token,
-    user: {
-        id: newPatient._id,
-        patientId: newPatient.patientId,
-        name: `${newPatient.firstName} ${newPatient.lastName}`,
-        email: newPatient.email,
-        mobile: newPatient.mobile,
-        role: 'patient'
-    }
-});
+        res.status(201).json({
+            message: "Patient registered successfully",
+            token,
+            user: {
+                id: newPatient._id,
+                patientId: newPatient.patientId,
+                name: `${newPatient.firstName} ${newPatient.lastName}`,
+                email: newPatient.email,
+                mobile: newPatient.mobile,
+                role: 'patient'
+            }
+        });
 
     } catch (error) {
         console.error('Registration error:', error);
         res.status(500).json({ message: "Server error" });
     }
-});
+})
 
 // @route POST /api/patient/login
 // @desc Login patient after OTP verification
